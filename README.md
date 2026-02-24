@@ -1,70 +1,69 @@
-# 🧾 Support Ticket System — Tech Intern Assessment
+# 📌 Project Summary
 
-## 📌 Project Summary
+I built a full-stack **AI-powered Support Ticket System** from scratch to simulate a real-world internal tool used by support teams.
 
-This project is a full-stack **Support Ticket System** built from scratch.
-
-It allows users to:
+The system allows users to:
 
 * Submit support tickets
-* Automatically categorize tickets using AI
+* Get automatic AI-based categorization
 * Track ticket status
-* Filter/search tickets
-* View system analytics
-* Manage tickets (resolve, close, delete)
+* Filter and search tickets
+* View analytics dashboard
+* Manage ticket lifecycle (resolve, close, delete)
 
-The entire system runs using **Docker** with one command.
+The entire application is containerized with **Docker**, so it can be run locally with a single command.
 
-Even someone non-technical can run the system by following the steps below.
+This project focuses on production-style architecture, not just UI.
 
 ---
 
-# 🎯 Goal of the Assignment
+# 🎯 Project Goal
 
-The objective was to build a real-world production-style system that includes:
+My goal was to design and implement a realistic production-style system that includes:
 
 * Backend API
 * Frontend UI
-* AI (LLM) integration
-* Database
-* Docker containerization
+* LLM integration
+* Database design
+* Dockerized deployment
 
-This simulates how real companies build internal tools.
+The idea was to simulate how real companies build internal tools and ensure the project demonstrates backend depth, system design, and integration skills.
 
 ---
 
-# 🧠 How the System Works (Simple Explanation)
+# 🧠 How the System Works
 
-Imagine a customer support system.
+The flow is similar to a real customer support platform:
 
-1. User writes a problem
-2. AI reads the description
+1. User submits a problem description
+2. AI reads the text
 3. AI suggests:
 
-   * Category (technical, billing, etc.)
-   * Priority (low, high, critical)
-4. User can accept or change suggestions
-5. Ticket is saved
-6. Team can update status
-7. Dashboard shows stats
+   * Category (billing, technical, etc.)
+   * Priority (low → critical)
+4. User can accept or override suggestions
+5. Ticket is stored in the database
+6. Support team updates status
+7. Dashboard updates automatically
 
-Everything updates live without refreshing the page.
+The UI updates in real time without page refresh.
 
 ---
 
-# 🏗️ Tech Stack Used
+# 🏗️ Tech Stack
 
 ## Backend
 
 * Django
 * Django REST Framework
-* PostgreSQL database
+* PostgreSQL
 
-Why Django?
+**Why Django**
 
 * Fast API development
 * Built-in admin panel
-* Strong database support
+* Strong ORM and validation
+* Production-ready structure
 
 ---
 
@@ -72,29 +71,32 @@ Why Django?
 
 * React (Vite)
 
-Why React?
+**Why React**
 
-* Fast UI updates
-* Component-based structure
-* Industry standard
+* Component-based architecture
+* Fast rendering
+* Industry standard for modern apps
 
 ---
 
-## AI / LLM
+## AI / LLM Integration
 
 * Google Gemini API
 
-Why LLM?
-To automatically classify tickets based on description.
+Used for automatic ticket classification.
 
 Example:
 
-> "Payment failed while subscribing"
-> AI suggests:
-> Category → Billing
-> Priority → High
+Input:
 
-User can override suggestions.
+> "Payment failed while subscribing"
+
+AI output:
+
+* Category → Billing
+* Priority → High
+
+Users can override suggestions before submission.
 
 ---
 
@@ -103,34 +105,37 @@ User can override suggestions.
 * Docker
 * Docker Compose
 
-Why Docker?
-So reviewer can run everything with one command.
+I containerized the entire system so reviewers can run it with one command and no manual setup.
 
 ---
 
-# 📦 System Architecture
+# 📦 Architecture
 
 ```
 User → React Frontend → Django API → PostgreSQL
-                     ↘ AI API (Gemini)
+                     ↘ Gemini API
 ```
+
+The frontend calls the Django API.
+The API calls Gemini for classification when needed.
+All data is stored in PostgreSQL.
 
 ---
 
-# 🗄️ Database Model
+# 🗄️ Database Design
 
-Ticket fields:
+Ticket model includes:
 
-| Field       | Purpose                                 |
+| Field       | Description                             |
 | ----------- | --------------------------------------- |
-| title       | short ticket title                      |
-| description | full problem                            |
+| title       | Short title                             |
+| description | Full issue text                         |
 | category    | billing / technical / account / general |
 | priority    | low / medium / high / critical          |
 | status      | open / in_progress / resolved / closed  |
-| created_at  | auto timestamp                          |
+| created_at  | timestamp                               |
 
-All constraints are enforced at the database level.
+Constraints and validation are enforced at the database level.
 
 ---
 
@@ -138,7 +143,7 @@ All constraints are enforced at the database level.
 
 ### Create Ticket
 
-POST `/api/tickets/`
+`POST /api/tickets/`
 
 Creates a new ticket.
 
@@ -146,7 +151,7 @@ Creates a new ticket.
 
 ### Get Tickets
 
-GET `/api/tickets/`
+`GET /api/tickets/`
 
 Supports filters:
 
@@ -163,9 +168,9 @@ Filters can be combined.
 
 ### Update Ticket
 
-PATCH `/api/tickets/<id>/`
+`PATCH /api/tickets/<id>/`
 
-Change:
+Update:
 
 * status
 * category
@@ -176,33 +181,31 @@ Change:
 
 ### Delete Ticket
 
-DELETE `/api/tickets/<id>/delete/`
+`DELETE /api/tickets/<id>/delete/`
 
-Removes ticket.
+Deletes ticket.
 
 ---
 
 ### Stats Endpoint
 
-GET `/api/tickets/stats/`
+`GET /api/tickets/stats/`
 
 Returns:
 
-```
-total tickets
-open tickets
-avg per day
-priority breakdown
-category breakdown
-```
+* total tickets
+* open tickets
+* avg tickets/day
+* priority breakdown
+* category breakdown
 
-Uses database aggregation (not Python loops).
+Uses database aggregation queries (not Python loops).
 
 ---
 
-### AI Classify Endpoint
+### AI Classification
 
-POST `/api/tickets/classify/`
+`POST /api/tickets/classify/`
 
 Input:
 
@@ -217,26 +220,26 @@ suggested_category
 suggested_priority
 ```
 
-Used by frontend before submission.
+Used by frontend before final submission.
 
 ---
 
 # 🤖 LLM Prompt Design
 
-The AI receives:
+The AI receives a structured prompt:
 
 ```
 You are a support ticket classifier.
-Read the description and return JSON:
+Return JSON:
 category: billing/technical/account/general
 priority: low/medium/high/critical
 ```
 
-Why this prompt?
+I designed the prompt to:
 
-* Structured output
-* Reliable parsing
-* Prevents random text
+* enforce structured JSON output
+* avoid random text
+* make parsing reliable
 
 ---
 
@@ -245,45 +248,45 @@ Why this prompt?
 If AI fails:
 
 * Ticket still submits
-* Default values used
+* Default values are used
 
-This ensures reliability.
+This ensures reliability and prevents blocking users.
 
 ---
 
 # 🎨 Frontend Features
 
-### Submit Ticket
+### Ticket Submission
 
-* Title input
-* Description input
+* Title + description inputs
 * AI auto-suggest
-* Editable dropdowns
+* Editable category/priority
 * Submit without page reload
 
 ---
 
-### Ticket List
+### Ticket Dashboard
 
-* Shows all tickets
-* Resolve button
-* Close with comment
-* Delete button
+* Ticket list
 * Filters
 * Search
+* Resolve button
+* Close with comment
+* Delete option
 
 ---
 
-### Stats Dashboard
+### Analytics Panel
 
-Shows:
+Displays:
 
 * Total tickets
 * Open tickets
-* Avg/day
-* Breakdown
+* Average/day
+* Category breakdown
+* Priority breakdown
 
-Auto updates after new ticket.
+Auto-updates after ticket changes.
 
 ---
 
@@ -291,45 +294,42 @@ Auto updates after new ticket.
 
 Everything runs with one command.
 
-## Step 1 — Install Docker
+## 1. Install Docker
 
-Download:
-https://www.docker.com/products/docker-desktop/
+[https://www.docker.com/products/docker-desktop/](https://www.docker.com/products/docker-desktop/)
 
----
+## 2. Add API Key
 
-## Step 2 — Add API Key
-
-Create `.env` file in project root:
+Create `.env` in root:
 
 ```
 GEMINI_API_KEY=your_key_here
 ```
 
-Get key from:
-https://makersuite.google.com/
-
----
-
-## Step 3 — Run Project
+## 3. Run
 
 ```
 docker-compose up --build
 ```
 
-That's it.
+Docker automatically:
+
+* starts PostgreSQL
+* runs migrations
+* starts backend
+* starts frontend
 
 ---
 
-# 🌐 App URLs
+# 🌐 Local URLs
 
-Frontend:
+Frontend
 
 ```
 http://localhost:5173
 ```
 
-Backend:
+Backend
 
 ```
 http://localhost:8000/api/tickets/
@@ -337,103 +337,93 @@ http://localhost:8000/api/tickets/
 
 ---
 
-# 🔄 Automatic Startup
-
-Docker automatically:
-
-* starts database
-* runs migrations
-* starts backend
-* starts frontend
-
-No manual setup required.
-
----
-
-# 🧪 Testing Flow
+# 🧪 Test Flow
 
 1. Open frontend
-2. Write description
+2. Submit ticket
 3. AI suggests category/priority
-4. Submit ticket
-5. Resolve ticket
-6. Close ticket
-7. Delete ticket
-8. See stats update
+4. Save ticket
+5. Resolve or close
+6. Delete ticket
+7. View stats update
 
-Everything updates live.
-
----
-
-# 🧱 Design Decisions
-
-### Why Django instead of Node?
-
-Faster to build APIs with strong ORM.
-
-### Why PostgreSQL?
-
-Reliable production database.
-
-### Why React?
-
-Best for dynamic UI.
-
-### Why Docker?
-
-One-command setup for reviewer.
-
-### Why Gemini?
-
-Free tier + fast classification.
+All updates happen live.
 
 ---
 
-# 📊 Evaluation Criteria Coverage
+# 🧱 Key Design Decisions
 
-| Area              | Status |
-| ----------------- | ------ |
-| Docker works      | ✅      |
-| LLM classify      | ✅      |
-| Stats aggregation | ✅      |
-| Filters/search    | ✅      |
-| DB constraints    | ✅      |
-| Frontend UI       | ✅      |
-| Auto refresh      | ✅      |
-| Env variables     | ✅      |
-| README            | ✅      |
+**Django over Node**
+
+* Faster API development
+* Built-in admin
+* Strong ORM
+
+**PostgreSQL**
+
+* Production-grade relational DB
+
+**React**
+
+* Dynamic UI
+* Fast updates
+
+**Docker**
+
+* One-command setup for reviewers
+
+**Gemini API**
+
+* Fast classification
+* Easy integration
+* Free tier available
+
+---
+
+# 📊 Feature Coverage
+
+| Feature              | Implemented |
+| -------------------- | ----------- |
+| Dockerized setup     | ✅           |
+| AI classification    | ✅           |
+| Stats aggregation    | ✅           |
+| Filters/search       | ✅           |
+| DB constraints       | ✅           |
+| Frontend UI          | ✅           |
+| Auto refresh         | ✅           |
+| Env variables        | ✅           |
+| Production structure | ✅           |
 
 ---
 
 # 🚀 Future Improvements
 
-If this were production:
+Planned next steps if extended to production:
 
-* Authentication system
-* User roles
-* Email notifications
-* WebSocket updates
+* Authentication & user roles
 * Ticket assignment
-* File uploads
+* Email notifications
+* WebSocket live updates
+* File attachments
+* Audit logs
 
 ---
 
-# 👨‍💻 Author Notes
+# 👨‍💻 About This Project
 
-This project was built to simulate a real production support tool.
+I built this project to demonstrate:
 
-Focus areas:
+* Backend system design
+* Full-stack integration
+* LLM usage in real apps
+* Dockerized deployment
+* Production-style architecture
 
-* clean architecture
-* reliable API
-* AI integration
-* containerized deployment
+This is intended to represent the level of complexity expected in real-world internal tools.
 
 ---
 
-# 🏁 Final Instructions for Reviewer
-
-Run:
+# 🏁 How to Run
 
 ```
 docker-compose up --build
@@ -445,10 +435,5 @@ Open:
 http://localhost:5173
 ```
 
-System should work fully end-to-end.
+The system should run end-to-end.
 
----
-
-# 🙌 Thank You
-
-Thank you for reviewing this submission.
